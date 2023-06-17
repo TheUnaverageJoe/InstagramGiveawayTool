@@ -25,9 +25,27 @@ class InstagramScrapper
         SSL_CTX* ctx;
         SSL* ssl;
         ofstream outputFile;
+    /*
+    Goal is to parse this instagram post comments
+    https://www.instagram.com/p/CrH0KmjLZdy/
 
-    // Goal is to parse this instagram post comments
-    //  https://www.instagram.com/p/CrH0KmjLZdy/
+    **NOTES** after inspecting Instagram post with Google Chrome
+    
+    **WARNING**
+        - Instagram and Facebook use the QUIC("quick") protocol for encrypted data transfer to the browser
+          This could be an issue as I currently use HTTPS via TCP. Hopefully there is TCP support on the server side??
+        - Current GetRequest sends unencrypted message, proven by wireskark.
+        - There may also be duplicate messages being sent as HTTP and HTTPS/TLSv1.3
+
+        - Comments are loaded through a content delivery network. via react scripts?
+        - It seems JS file for loading comments is in the static.cdninstagram.com connection
+            - rsrc.php folder(stands for resources.php?)
+                - Folder "v3i1l34/ys/l/en_US"
+                    - file named "6VvEMxLPoB4.js?_nc_x=Ij3Wp8lg5Kz"
+                        - In this file there is many references to commenters and display names 
+                          so I think this is the right place to start looking
+
+    */
 
     // Public functions
     public:
@@ -352,6 +370,9 @@ int main(int argc, char* argv[])
     testHTTPS->CreateSocket(); // discard return of true because its inconsiquential
     testHTTPS->GetHostInfo(); //Get host info for connection thats about to occur
     testHTTPS->ConnectToURL(); //Connection Established to example.com verified with Wireshark
+    if(!testHTTPS->CreateFileNamed("output.txt")) exit(-1); //If the file doesnt get created then we dont want to continue with the request
+    testHTTPS->GETRequest("");
+
     
 
     testHTTPS->CleanUp();
